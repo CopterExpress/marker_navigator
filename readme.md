@@ -18,7 +18,7 @@
 
 ```python
 import rospy
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped, Quaternion
 import tf
 
 # ...
@@ -33,10 +33,7 @@ pose.pose.position.z = 2
 
 # Задаем рысканье относительного маркерного поля
 q = tf.transformations.quaternion_from_euler(0, 0, math.radions(23))
-pose.pose.orientation.x = q[0]
-pose.pose.orientation.y = q[1]
-pose.pose.orientation.z = q[2]
-pose.pose.orientation.w = q[3]
+pose.pose.orientation = Quaternion(*q)
 
 # Производим трансформацию в систему координат ``local_origin``
 pose_local = transform_listener.transformPose('local_origin', pose)
