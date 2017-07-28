@@ -18,7 +18,7 @@
 
 ```python
 import rospy
-from geometry_msgs.msg import PoseStamped, Quaternion
+from geometry_msgs.msg import PoseStamped, Quaternion, Point
 import tf
 
 # ...
@@ -27,9 +27,7 @@ transform_listener = tf.TransformListener()
 
 pose = PoseStamped()
 pose.header.frame_id = 'marker_map'
-pose.pose.position.x = 2  # координаты относительного маркерного пол
-pose.pose.position.y = 2
-pose.pose.position.z = 2
+pose.pose.position = Point(1, 2, 3)  # координаты относительного маркерного поля
 
 # Задаем рысканье относительного маркерного поля
 q = tf.transformations.quaternion_from_euler(0, 0, math.radions(23))
