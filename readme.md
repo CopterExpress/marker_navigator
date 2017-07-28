@@ -1,0 +1,162 @@
+Навигация по полю ArUco-маркеров
+================================
+
+Пакет осуществляет детектирование позиции по карте ArUco-маркеров.
+
+Необходимо использование EKF, включенного Fusion на Vision Positoin и Vision Yaw.
+
+Также необоходимо включить использование Vision в Q Attitude Estimator (TODO).
+
+Публикуемые в TF системы координат:
+
+* ``local_origin`` (MAVROS) – координаты относительно точки инициализации полетного контроллера
+* ``fcu`` (MAVROS) –  координаты относительно квадрокоптера
+* ``marker_map`` – координаты относительно поля ArUco-маркеров
+
+Пример трансормирования из системы координат ``local_origin`` в ``marker_map``:
+
+```python
+import rospy
+from geometry_msgs.msg import PoseStamped
+import tf
+
+# ...
+
+transform_listener = tf.TransformListener()
+
+pose = PoseStamped()
+pose.header.frame_id = 'marker_map'
+pose.pose.position.x = 2  # координаты относительного маркерного пол
+pose.pose.position.y = 2
+pose.pose.position.z = 2
+
+# Задаем рысканье относительного маркерного поля
+q = tf.transformations.quaternion_from_euler(0, 0, math.radions(23))
+pose.pose.orientation.x = q[0]
+pose.pose.orientation.y = q[1]
+pose.pose.orientation.z = q[2]
+pose.pose.orientation.w = q[3]
+
+# Производим трансформацию в систему координат ``local_origin``
+pose_local = transform_listener.transformPose('local_origin', pose)
+```
+
+Далее можно опубликовать ``pose_local`` в топик ``/mavros/setpoint_position/local``.
+
+```python
+pose_local.header.stamp = rospy.get_rostime()
+pub = rospy.Publisher('/mavros/setpoint_position/local', PoseStamped, queue_size=1)
+pub.publish(pose_local)
+```
+
+Simple control
+--------------
+
+Нода для упрощение управления коптером через MAVROS и автоматической трансформации системы координат.
+При вызове любого из сервисов коптер автоматически переведется в OFFBOARD и заармится (коптер взлетит, если находится на полу!)
+
+Общие для сервисов параметры:
+
+* ``frame_id`` – система координат в TF, в которой заданы координаты и рысканье (yaw).
+* ``update_frame`` – считать ли систему координат динамической (false для local_origin, fcu, true для marker_map)
+* ``yaw`` – рысканье в радианах в заданой системе координат (0 – коптер смотрит по оси X).
+* ``yaw_rate`` – угловая скорость по рысканью в радианах в секунду (против часовой).
+* ``thrust`` – уровень газа (от 0 [нет газа] до 1 [полный газ])
+
+Объявление прокси ко всем сервисам:
+
+```python
+import rospy
+from marker_navigator.srv import SetPosition, \
+    SetPositionYawRate, \
+    SetVelocity, \
+    SetVelocityYawRate, \
+    SetAttitude, \
+    SetAttitudeYawRate, \
+    SetRatesYaw, \
+    SetRates
+
+rospy.init_node('foo')
+
+# Создаем прокси ко всем сервисам:
+
+set_position = rospy.ServiceProxy('/set_position', SetPosition)
+set_position_yaw_rate = rospy.ServiceProxy('/set_position/yaw_rate', SetPositionYawRate)
+
+set_velocity = rospy.ServiceProxy('/set_velocity', SetVelocity)
+set_Velocity_yaw_rate = rospy.ServiceProxy('/set_Velocity/yaw_rate', SetVelocityYawRate)
+
+set_attitude = rospy.ServiceProxy('/set_attitude', SetAttitude)
+set_attitude_yaw_rate = rospy.ServiceProxy('/set_attitude/yaw_rate', SetattitudeYawRate)
+
+set_rates_yaw = rospy.ServiceProxy('/set_rates/yaw', SetRatesYaw)
+set_rates = rospy.ServiceProxy('/set_rates', SetRates)
+
+release = rospy.ServiceProxy('/release', Trigger)
+```
+
+### set_position
+
+Установить позицию и рысканье.
+
+Параметры: x, y, z, yaw, frame_id, update_frame
+
+Задание позиции относительно коптера:
+
+```python
+set_position(x=0, y=0, z=3, frame_id='fcu')  #  взлет на 3 метра
+```
+
+Задание позиции относительно системы маркеров
+(фрейм marker_map не будет опубликован, пока коптер хоть раз не увидит один из маркеров):
+
+```python
+set_position(x=2, y=2, z=3, frame_id='marker_map', update_frame=True)  #  полет в координату 2:2, высота 3 метра
+```
+
+### set_position_yaw_rate
+
+Установить позицию и угловую скорость по рысканью.
+
+Параметры: x, y, z, yaw_rate, frame_id, update_frame
+
+### set_velocity
+
+Установить скорости и рысканье.
+
+Параметры: vx, vy, vz, yaw, frame_id, update_frame
+
+### set_velocity_yaw_rate
+
+Установить скорости и угловую скорость по рысканью.
+
+Параметры: vx, vy, vz, yaw_rate, frame_id, update_frame
+
+### set_attitude
+
+Установить тангаж, крен и рысканье.
+
+Параметры: pitch, roll, yaw, thrust, frame_id, update_frame
+
+### set_attitude_yaw_rate
+
+Установить тангаж, крен и угловую скорость по рысканью.
+
+Параметры: pitch, roll, yaw_rate, thrust
+
+### set_rates_yaw
+
+Установить угловые скорости по тангажу и крену и рысканье.
+
+Параметры: pitch_rate, roll_rate, yaw, thrust, frame_id, update_frame
+
+### set_rates
+
+Установить угловые скорости по тагажу, крену и рысканью.
+
+Параметры: pitch_rate, roll_rate, yaw_rate, thrust
+
+### release
+
+Перестать публиковать команды коптеру (отпустить управление).
+Возможно продолжение управления средствами MAVROS.
