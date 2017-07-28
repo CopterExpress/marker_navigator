@@ -11,6 +11,7 @@
 
 * ``local_origin`` (MAVROS) – координаты относительно точки инициализации полетного контроллера
 * ``fcu`` (MAVROS) –  координаты относительно квадрокоптера
+* ``fcu_horizon`` – координаты относительно квадрокоптера без учета наклонов по танкажу и рысканью
 * ``marker_map`` – координаты относительно поля ArUco-маркеров
 
 Пример трансормирования из системы координат ``local_origin`` в ``marker_map``:
@@ -104,7 +105,7 @@ release = rospy.ServiceProxy('/release', Trigger)
 Задание позиции относительно коптера:
 
 ```python
-set_position(x=0, y=0, z=3, frame_id='fcu')  #  взлет на 3 метра
+set_position(x=0, y=0, z=3, frame_id='fcu_horizon')  #  взлет на 3 метра
 ```
 
 Задание позиции относительно системы маркеров
@@ -125,6 +126,12 @@ set_position(x=2, y=2, z=3, frame_id='marker_map', update_frame=True)  #  пол
 Установить скорости и рысканье.
 
 Параметры: vx, vy, vz, yaw, frame_id, update_frame
+
+Полет по кругу:
+
+```python
+set_velocity_yaw_rate(vx=0.2, vy=0.0, vz=0, yaw_rate=0.5, frame_id: 'fcu_horizon', update_frame: true}"
+```
 
 ### set_velocity_yaw_rate
 
