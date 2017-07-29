@@ -1,4 +1,4 @@
-Навигация по полю ArUco-маркеров
+Навигация в поле ArUco-маркеров
 ================================
 
 Пакет осуществляет детектирование позиции по карте ArUco-маркеров а также навигацию по ней для PX4.
@@ -14,7 +14,7 @@
 * ``fcu_horiz`` — координаты относительно квадрокоптера без учета наклонов по танкажу и рысканью
 * ``marker_map`` — координаты относительно поля ArUco-маркеров
 
-Пример трансормирования из системы координат ``local_origin`` в ``marker_map``:
+Пример трансформации из системы координат ``local_origin`` в ``marker_map``:
 
 ```python
 import rospy
@@ -48,13 +48,13 @@ pub.publish(pose_local)
 Simple control
 --------------
 
-Нода для упрощения управления коптером через MAVROS и автоматической трансформации системы координат.
+ROS-модуль для упрощения управления коптером через MAVROS и автоматической трансформации системы координат.
 При вызове любого из сервисов коптер автоматически переведется в OFFBOARD и заармится (**коптер взлетит, если находится на полу!**)
 
 Общие для сервисов параметры:
 
 * ``frame_id`` — система координат в TF, в которой заданы координаты и рысканье (yaw).
-* ``update_frame`` — считать ли систему координат динамической (false для local_origin, fcu, true для marker_map)
+* ``update_frame`` — считать ли систему координат изменяющейся (false для local_origin, fcu, true для marker_map)
 * ``yaw`` — рысканье в радианах в заданой системе координат (0 – коптер смотрит по оси X).
 * ``yaw_rate`` — угловая скорость по рысканью в радианах в секунду (против часовой).
 * ``thrust`` — уровень газа (от 0 [нет газа] до 1 [полный газ])
@@ -71,6 +71,8 @@ from marker_navigator.srv import SetPosition, \
     SetAttitudeYawRate, \
     SetRatesYaw, \
     SetRates
+from std_srvs.srv import Trigger
+
 
 rospy.init_node('foo')
 
@@ -174,12 +176,31 @@ set_velocity_yaw_rate(vx=0.2, vy=0.0, vz=0, yaw_rate=0.5, frame_id: 'fcu_horiz',
 Посадка
 -------
 
-Для посадки можно использовать режим AUTO.LAND. Land detector должен быть включен и указан в LPE_FUSION.
+Для посадки можно использовать режим ``AUTO.LAND``. Land detector должен быть включен и указан в ``LPE_FUSION``.
 
 ```python
+from mavros_msgs.srv import SetMode
+
+# ...
+
 set_mode = rospy.ServiceProxy('/mavros/set_mode', SetMode)  # объявляем прокси к сервису переключения режимов
 
 # ...
 
 set_mode(base_mode=0, custom_mode='AUTO.LAND')  # включаем режим посадки
+```
+
+Дебаг
+---
+
+Вывод координат коптера относительно маркерного поля:
+
+```bash
+rostopic echo /vision_position_estimator/position/marker_map
+```
+
+Статус запущенного модуля:
+
+```bash
+sudo systemctl status marker_navigator
 ```
