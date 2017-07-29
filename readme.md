@@ -192,3 +192,9 @@ set_mode(base_mode=0, custom_mode='AUTO.LAND')  # включаем режим п
 ```bash
 rostopic echo /vision_position_estimator/position/marker_map
 ```
+
+Статус запущенного модуля:
+
+```bash
+sudo systemctl status marker_navigator
+```
