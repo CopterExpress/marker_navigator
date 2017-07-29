@@ -125,7 +125,7 @@ set_position(x=2, y=2, z=3, frame_id='marker_map', update_frame=True)  #  пол
 Полет по кругу:
 
 ```python
-set_velocity_yaw_rate(vx=0.2, vy=0.0, vz=0, yaw_rate=0.5, frame_id: 'fcu_horiz', update_frame: true}"
+set_velocity_yaw_rate(vx=0.2, vy=0.0, vz=0, yaw_rate=0.5, frame_id: 'fcu_horiz', update_frame: true)
 ```
 
 ### set_velocity_yaw_rate
