@@ -80,7 +80,7 @@ set_position = rospy.ServiceProxy('/set_position', SetPosition)
 set_position_yaw_rate = rospy.ServiceProxy('/set_position/yaw_rate', SetPositionYawRate)
 
 set_velocity = rospy.ServiceProxy('/set_velocity', SetVelocity)
-set_Velocity_yaw_rate = rospy.ServiceProxy('/set_Velocity/yaw_rate', SetVelocityYawRate)
+set_velocity_yaw_rate = rospy.ServiceProxy('/set_Velocity/yaw_rate', SetVelocityYawRate)
 
 set_attitude = rospy.ServiceProxy('/set_attitude', SetAttitude)
 set_attitude_yaw_rate = rospy.ServiceProxy('/set_attitude/yaw_rate', SetattitudeYawRate)
