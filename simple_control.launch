@@ -1,0 +1,3 @@
+<launch>
+    <node name="simple_control" pkg="marker_navigator" type="simple.py" output="screen"/>
+</launch>
