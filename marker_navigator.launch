@@ -1,0 +1,14 @@
+<launch>
+    <node name="vision_position_estimator" pkg="marker_navigator" type="estimator.py" output="screen">
+        <param name="camera_fov" value="120"/>
+        <param name="map_offset" value='{"x":0, "y": 0, "z": 0}'/>
+        <param name="camera_offset" value='{"x":0, "y": 0, "z": 0}'/>
+        <param name="position_offset" value="true"/>
+        <param name="publish_mavlink" value="true"/>
+    </node>
+    <node name="simple_control" pkg="marker_navigator" type="simple.py" output="screen"/>
+    <include file="$(find raspcv)/marker_finder.launch"/>
+    <include file="$(find mavros)/launch/px4.launch">
+        <arg name="fcu_url" value="/dev/ttyAMA0:921600"/>
+    </include>
+</launch>
