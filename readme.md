@@ -103,6 +103,14 @@ release = rospy.ServiceProxy('/release', Trigger)
 set_position(x=0, y=0, z=3, frame_id='fcu_horiz')  #  взлет на 3 метра
 ```
 
+```python
+set_position(x=1, y=0, z=0, frame_id='fcu_horiz')  # пролететь вперед на 1 метр
+```
+
+```python
+set_position(x=0, y=-1, z=0, frame_id='fcu_horiz')  # пролететь вправо на 1 метр
+```
+
 Задание позиции относительно системы маркеров
 (фрейм marker_map не будет опубликован, пока коптер хоть раз не увидит один из маркеров):
 
@@ -162,3 +170,16 @@ set_velocity_yaw_rate(vx=0.2, vy=0.0, vz=0, yaw_rate=0.5, frame_id: 'fcu_horiz',
 
 Перестать публиковать команды коптеру (отпустить управление).
 Возможно продолжение управления средствами MAVROS.
+
+Посадка
+-------
+
+Для посадки можно использовать режим AUTO.LAND. Land detector должен быть включен и указан в LPE_FUSION.
+
+```python
+set_mode = rospy.ServiceProxy('/mavros/set_mode', SetMode)  # объявляем прокси к сервису переключения режимов
+
+# ...
+
+set_mode(base_mode=0, custom_mode='AUTO.LAND')  # включаем режим посадки
+```
