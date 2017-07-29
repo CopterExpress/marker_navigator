@@ -174,7 +174,7 @@ set_velocity_yaw_rate(vx=0.2, vy=0.0, vz=0, yaw_rate=0.5, frame_id: 'fcu_horiz',
 Посадка
 -------
 
-Для посадки можно использовать режим AUTO.LAND. Land detector должен быть включен и указан в LPE_FUSION.
+Для посадки можно использовать режим ``AUTO.LAND``. Land detector должен быть включен и указан в ``LPE_FUSION``.
 
 ```python
 set_mode = rospy.ServiceProxy('/mavros/set_mode', SetMode)  # объявляем прокси к сервису переключения режимов
