@@ -183,3 +183,12 @@ set_mode = rospy.ServiceProxy('/mavros/set_mode', SetMode)  # объявляем
 
 set_mode(base_mode=0, custom_mode='AUTO.LAND')  # включаем режим посадки
 ```
+
+Дебаг
+---
+
+Вывод координат коптера относительно маркерного поля:
+
+```bash
+rostopic echo /vision_position_estimator/position/marker_map
+```
