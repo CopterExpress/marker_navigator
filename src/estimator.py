@@ -4,6 +4,7 @@
 
 from __future__ import division
 
+import time
 import json
 import math
 import numpy
@@ -33,6 +34,8 @@ PUBLISH_MAVLINK = rospy.get_param('~publish_mavlink')
 
 FOV1 = math.radians(239)
 FOV2 = math.radians(140)
+
+counter = 0
 
 
 MARKERS_MAP = {
@@ -145,6 +148,8 @@ class MarkerPositionEstimator(object):
     fcu_marker_translation = None
     fcu_marker_rotation = None
 
+    recalc_time = 0
+
     def __init__(self):
         rospy.Subscriber('/mavros/local_position/pose', PoseStamped, self.pose_callback, queue_size=1)
         rospy.Subscriber('/marker_data', MarkerArray, self.marker_callback, queue_size=1)
@@ -187,6 +192,8 @@ class MarkerPositionEstimator(object):
 
         biggest_marker_size = 0
         biggest_marker_yaw = None
+
+        # print len(data.markers)
 
         # Process markers
         for marker in data.markers:
@@ -313,6 +320,7 @@ class MarkerPositionEstimator(object):
             yaw_fl.append(marker_yaw_ak % (2 * math.pi))
 
         if not x_fl:
+            counter = 0
             return
 
         tx = numpy.median(x_fl)
@@ -367,14 +375,23 @@ class MarkerPositionEstimator(object):
         # self.pose_pub.publish(self.pose_message)
 
         if self.last_published is None or \
-                                rospy.get_rostime() - self.last_published > rospy.Duration.from_sec(1.5):
-            rospy.loginfo('Recalculate marker_map frame')
+                                rospy.get_rostime() - self.last_published > rospy.Duration.from_sec(1.5) or \
+                                time.time() - self.recalc_time > 5:
 
-            self.fcu_marker_translation = (tx, ty, -dist)
-            self.fcu_marker_rotation = quaternion
+            global counter
+            counter += 1
+            if counter > 3:
+                rospy.loginfo('Recalculate marker_map frame')
 
-            self.fcu_local_translation = self.pose.pose.position.x, self.pose.pose.position.y, self.pose.pose.position.z
-            self.fcu_local_rotation = self.pose.pose.orientation.x, self.pose.pose.orientation.y, self.pose.pose.orientation.z, self.pose.pose.orientation.w
+                self.fcu_marker_translation = (tx, ty, -dist)
+                self.fcu_marker_rotation = quaternion
+
+                self.fcu_local_translation = self.pose.pose.position.x, self.pose.pose.position.y, self.pose.pose.position.z
+                self.fcu_local_rotation = self.pose.pose.orientation.x, self.pose.pose.orientation.y, self.pose.pose.orientation.z, self.pose.pose.orientation.w
+
+                self.recalc_time = time.time()
+            else:
+                return
 
         transform_broadcaster.sendTransform(
             (tx, ty, -dist),
@@ -462,7 +479,8 @@ class MarkerPositionEstimator(object):
                 vision_position = transform_listener.transformPose('local_origin', p)
                 vision_position.header.stamp = data.header.stamp
                 self.vision_position_pub.publish(vision_position)
-                print 'vision yaw', t.euler_from_quaternion((vision_position.pose.orientation.x,vision_position.pose.orientation.y,vision_position.pose.orientation.z, vision_position.pose.orientation.w))[2]
+                # print vision_position
+                # print 'vision yaw', t.euler_from_quaternion((vision_position.pose.orientation.x,vision_position.pose.orientation.y,vision_position.pose.orientation.z, vision_position.pose.orientation.w))[2]
             except Exception as e:
                 print e
 
