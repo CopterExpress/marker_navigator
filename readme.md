@@ -45,6 +45,8 @@ pub = rospy.Publisher('/mavros/setpoint_position/local', PoseStamped, queue_size
 pub.publish(pose_local)
 ```
 
+[Информация о настройках PX4](https://github.com/CopterExpress/clever/blob/master/docs/setup.md) для использования модуля.
+
 Simple control
 --------------
 
