@@ -3,7 +3,8 @@
 
 Пакет осуществляет детектирование позиции по карте ArUco-маркеров а также навигацию по ней для PX4.
 
-Необходимо использование LPE, включенного Fusion на Vision Positoin и Vision Yaw.
+Необходимо использование LPE, включенного Fusion на Vision Positoin и Vision Yaw. Подробнее см. [информацию о настройках PX4](https://github.com/CopterExpress/clever/blob/master/docs/setup.md).
+
 
 Также необоходимо включить использование Vision в Q Attitude Estimator (TODO).
 
@@ -44,8 +45,6 @@ pose_local.header.stamp = rospy.get_rostime()
 pub = rospy.Publisher('/mavros/setpoint_position/local', PoseStamped, queue_size=1)
 pub.publish(pose_local)
 ```
-
-[Информация о настройках PX4](https://github.com/CopterExpress/clever/blob/master/docs/setup.md) для использования модуля.
 
 Simple control
 --------------
