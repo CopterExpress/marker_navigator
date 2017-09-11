@@ -3,7 +3,8 @@
 
 Пакет осуществляет детектирование позиции по карте ArUco-маркеров а также навигацию по ней для PX4.
 
-Необходимо использование LPE, включенного Fusion на Vision Positoin и Vision Yaw.
+Необходимо использование LPE, включенного Fusion на Vision Positoin и Vision Yaw. Подробнее см. [информацию о настройках PX4](https://github.com/CopterExpress/clever/blob/master/docs/setup.md).
+
 
 Также необоходимо включить использование Vision в Q Attitude Estimator (TODO).
 
@@ -146,25 +147,25 @@ set_velocity_yaw_rate(vx=0.2, vy=0.0, vz=0, yaw_rate=0.5, frame_id: 'fcu_horiz',
 
 ### set_attitude
 
-Установить тангаж, крен и рысканье.
+Установить тангаж, крен, рысканье и уровень газа.
 
 Параметры: pitch, roll, yaw, thrust, frame_id, update_frame
 
 ### set_attitude_yaw_rate
 
-Установить тангаж, крен и угловую скорость по рысканью.  **Возможно, не поддерживается в PX4**.
+Установить тангаж, крен, угловую скорость по рысканью и уровень газа.  **Возможно, не поддерживается в PX4**.
 
 Параметры: pitch, roll, yaw_rate, thrust
 
 ### set_rates_yaw
 
-Установить угловые скорости по тангажу и крену и рысканье.
+Установить угловые скорости по тангажу и крену, рысканье и уровень газа.
 
 Параметры: pitch_rate, roll_rate, yaw, thrust, frame_id, update_frame
 
 ### set_rates
 
-Установить угловые скорости по тагажу, крену и рысканью.
+Установить угловые скорости по тагажу, крену и рысканью и уровень газа.
 
 Параметры: pitch_rate, roll_rate, yaw_rate, thrust
 
