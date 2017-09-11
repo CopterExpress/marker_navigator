@@ -319,6 +319,7 @@ class MarkerPositionEstimator(object):
             z_fl.append(height_meters)
             yaw_fl.append(marker_yaw_ak % (2 * math.pi))
 
+        global counter
         if not x_fl:
             counter = 0
             return
@@ -378,7 +379,6 @@ class MarkerPositionEstimator(object):
                                 rospy.get_rostime() - self.last_published > rospy.Duration.from_sec(1.5) or \
                                 time.time() - self.recalc_time > 5:
 
-            global counter
             counter += 1
             if counter > 3:
                 rospy.loginfo('Recalculate marker_map frame')
