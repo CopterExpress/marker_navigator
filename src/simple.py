@@ -82,7 +82,7 @@ def offboard_and_arm():
         time.sleep(.3)
         print 'Offboarding'
         ret = set_mode(base_mode=0, custom_mode='OFFBOARD')
-        if not ret:
+        if not ret.mode_sent:
             return False
         start = time.time()
         while True:
@@ -93,7 +93,7 @@ def offboard_and_arm():
     if not armed:
         print 'Arming'
         ret = arming(True)
-        if not ret:
+        if not ret.mode_sent:
             return False
         start = time.time()
         while True:
