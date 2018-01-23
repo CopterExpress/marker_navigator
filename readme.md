@@ -1,6 +1,8 @@
 Навигация в поле ArUco-маркеров
 ================================
 
+**DEPRECATED**. Ипользуйте [Clever Bundle](https://github.com/CopterExpress/clever_bundle).
+
 Пакет осуществляет детектирование позиции по карте ArUco-маркеров а также навигацию по ней для PX4.
 
 Необходимо использование LPE, включенного Fusion на Vision Positoin и Vision Yaw. Подробнее см. [информацию о настройках PX4](https://github.com/CopterExpress/clever/blob/master/docs/setup.md).
